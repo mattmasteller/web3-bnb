@@ -1,6 +1,46 @@
+import { useEffect, useState } from 'react'
+import detectEthereumProvider from '@metamask/detect-provider'
 import { Box, Heading, Container, Text, Button, Stack } from '@chakra-ui/react'
 
 function App() {
+  const [account, setAccount] = useState(false)
+
+  useEffect(() => {
+    isConnected()
+  }, [])
+
+  const isConnected = async () => {
+    const provider = await detectEthereumProvider()
+    const accounts = await provider.request({ method: 'eth_accounts' })
+
+    if (accounts.length > 0) {
+      console.log('setAccount', accounts[0])
+      setAccount(accounts[0])
+    } else {
+      console.log('No authorized account found')
+    }
+  }
+
+  const connect = async () => {
+    try {
+      const provider = await detectEthereumProvider()
+
+      // returns an arrary of accounts
+      const accounts = await provider.request({
+        method: 'eth_requestAccounts',
+      })
+
+      // check if array at least one element
+      if (accounts.length > 0) {
+        setAccount(accounts[0])
+      } else {
+        alert('No account found')
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <Container maxW={'3xl'}>
       <Stack
@@ -32,17 +72,21 @@ function App() {
           alignSelf={'center'}
           position={'relative'}
         >
-          <Button
-            colorScheme={'green'}
-            bg={'green.400'}
-            rounded={'full'}
-            px={6}
-            _hover={{
-              bg: 'green.500',
-            }}
-          >
-            Connect your Wallet
-          </Button>
+          {!account && (
+            <Button
+              onClick={connect}
+              colorScheme={'green'}
+              bg={'green.400'}
+              rounded={'full'}
+              px={6}
+              _hover={{
+                bg: 'green.500',
+              }}
+            >
+              Connect your Wallet
+            </Button>
+          )}
+          {account && <div>{account}</div>}
         </Stack>
       </Stack>
     </Container>
