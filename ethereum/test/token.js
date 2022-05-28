@@ -66,7 +66,7 @@ describe('Web3bnb - token', () => {
       await contract.mint(bob.address, ether(40))
 
       // Collect revenue
-      await contract.connect(renter1).createBooking2([1644143400], {
+      await contract.connect(renter1).createBooking([1644143400], {
         value: ether(1),
       })
 
@@ -96,7 +96,7 @@ describe('Web3bnb - token', () => {
       await contract.mint(bob.address, ether(40))
 
       // Collect revenue
-      await contract.connect(renter1).createBooking2([1644143400], {
+      await contract.connect(renter1).createBooking([1644143400], {
         value: ether(1),
       })
 
@@ -107,7 +107,7 @@ describe('Web3bnb - token', () => {
       expect(await contract.balanceOf(carol.address)).to.eq(ether(30))
 
       // Collect more revenue
-      await contract.connect(renter1).createBooking2([1644143600], {
+      await contract.connect(renter1).createBooking([1644143600], {
         value: ether(1),
       })
 
@@ -141,7 +141,7 @@ describe('Web3bnb - token', () => {
       await contract.mint(bob.address, ether(40))
 
       // Collect revenue
-      await contract.connect(renter1).createBooking2([1644143400], {
+      await contract.connect(renter1).createBooking([1644143400], {
         value: ether(1),
       })
 
@@ -149,7 +149,7 @@ describe('Web3bnb - token', () => {
       await contract.connect(alice).transfer(carol.address, ether(60))
 
       // Collect more revenue
-      await contract.connect(renter1).createBooking2([1644143600], {
+      await contract.connect(renter1).createBooking([1644143600], {
         value: ether(1),
       })
 
@@ -183,7 +183,7 @@ describe('Web3bnb - token', () => {
       await contract.mint(bob.address, ether(20))
 
       // Collect revenue
-      await contract.connect(renter1).createBooking2([1644143400], {
+      await contract.connect(renter1).createBooking([1644143400], {
         value: ether(1),
       })
 
@@ -191,7 +191,7 @@ describe('Web3bnb - token', () => {
       await contract.mint(carol.address, ether(50))
 
       // Collect more revenue
-      await contract.connect(renter1).createBooking2([1644143600], {
+      await contract.connect(renter1).createBooking([1644143600], {
         value: ether(1),
       })
 

@@ -50,11 +50,11 @@ describe('Web3bnb - bookings', function () {
   })
 
   it('Should add two bookings', async function () {
-    await contract.connect(addr1).createBooking2([1644143400], {
+    await contract.connect(addr1).createBooking([1644143400], {
       value: ether(0.2),
     })
 
-    await contract.connect(addr2).createBooking2([1644154200], {
+    await contract.connect(addr2).createBooking([1644154200], {
       value: ether(0.2),
     })
 
@@ -64,7 +64,7 @@ describe('Web3bnb - bookings', function () {
   })
 
   it('Should add booking with multiple days', async function () {
-    await contract.connect(addr2).createBooking2([1644143400, 1644150600], {
+    await contract.connect(addr2).createBooking([1644143400, 1644150600], {
       value: ether(0.2),
     })
 
@@ -75,7 +75,7 @@ describe('Web3bnb - bookings', function () {
 
   it('Should not allow more than max days booked', async function () {
     await expect(
-      contract.connect(addr1).createBooking2(
+      contract.connect(addr1).createBooking(
         [
           // 12 bookings exced the max of 10
           1644143400, 1644229800, 1644143401, 1644229801, 1644143402,
@@ -90,12 +90,12 @@ describe('Web3bnb - bookings', function () {
   })
 
   it('Should not allow booking on the same day', async function () {
-    await contract.connect(addr1).createBooking2([1644143400, 1644150600], {
+    await contract.connect(addr1).createBooking([1644143400, 1644150600], {
       value: ether(0.2),
     })
 
     await expect(
-      contract.connect(addr2).createBooking2([1644143400, 1644150600], {
+      contract.connect(addr2).createBooking([1644143400, 1644150600], {
         value: ether(0.2),
       })
     ).to.be.revertedWith('Date already booked')
