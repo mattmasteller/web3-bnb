@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import detectEthereumProvider from '@metamask/detect-provider'
 import { Box, Heading, Container, Text, Button, Stack } from '@chakra-ui/react'
 
+import Calendar from './components/Calendar'
+
 function App() {
   const [account, setAccount] = useState(false)
 
@@ -86,7 +88,12 @@ function App() {
               Connect your Wallet
             </Button>
           )}
-          {account && <div>{account}</div>}
+          {account && (
+            <>
+              <div>{account}</div>
+              <Calendar account={account} />
+            </>
+          )}
         </Stack>
       </Stack>
     </Container>
