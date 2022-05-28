@@ -19,7 +19,7 @@ function saveFrontendFiles() {
 
   const artifact = artifacts.readArtifactSync('Web3bnb')
 
-  fs.writeFileSync(abiDir + '/Calend3.json', JSON.stringify(artifact, null, 2))
+  fs.writeFileSync(abiDir + '/Web3bnb.json', JSON.stringify(artifact, null, 2))
 }
 
 async function main() {
