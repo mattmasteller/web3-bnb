@@ -8,6 +8,20 @@
 // Runtime Environment's members available in the global scope.
 const hre = require('hardhat')
 
+function saveFrontendFiles() {
+  const fs = require('fs')
+
+  const abiDir = __dirname + '/../../src/abis'
+
+  if (!fs.existsSync(abiDir)) {
+    fs.mkdirSync(abiDir)
+  }
+
+  const artifact = artifacts.readArtifactSync('Web3bnb')
+
+  fs.writeFileSync(abiDir + '/Calend3.json', JSON.stringify(artifact, null, 2))
+}
+
 async function main() {
   // Hardhat always runs the compile task when running scripts with its command
   // line interface.
@@ -28,6 +42,8 @@ async function main() {
   console.log('owner address', accounts[0].address)
 
   await contract.mint(accounts[0].address, 1000000)
+
+  saveFrontendFiles()
 }
 
 // We recommend this pattern to be able to use async/await everywhere
