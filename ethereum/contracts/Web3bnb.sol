@@ -10,8 +10,9 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.
 contract Web3bnb is Ownable, ReentrancyGuard, ERC20 {
     uint256 public constant MAX_SUPPLY = 100 ether;
     uint32 private constant MULTIPLIER = 1e9; // in gwei
+    uint8 private constant MAX_BOOKING_DAYS = 7;
 
-    uint256 rate;
+    uint256 rate; // daily rental rate
 
     /// @notice Eth share of each token in gwei
     uint256 dividendPerToken;
@@ -23,13 +24,17 @@ contract Web3bnb is Ownable, ReentrancyGuard, ERC20 {
     bool public locked;
 
     struct Booking {
-        address renter; // person you are booking
+        address renter; // person booking
         uint256 startTime; // start time of booking
         uint256 endTime; // end time of the booking
         uint256 amountPaid; // amount paid for the booking
+        uint256[] dates;
     }
 
     Booking[] bookings;
+
+    // use this to prevent double bookings
+    mapping(uint256 => address) bookedDates;
 
     event FundsReceived(uint256 amount, uint256 dividendPerToken);
 
@@ -72,12 +77,19 @@ contract Web3bnb is Ownable, ReentrancyGuard, ERC20 {
         return bookings;
     }
 
-    function createBooking(uint256 startTime, uint256 endTime) public payable {
+    function createBooking2(uint256[] calldata dates) public payable {
+        require(dates.length <= MAX_BOOKING_DAYS, "Max booking days exceeded");
+
+        for (uint8 i = 0; i < dates.length; ++i) {
+            // ensure date is not already booked
+            require(bookedDates[dates[i]] == address(0), "Date already booked");
+            bookedDates[dates[i]] = msg.sender;
+        }
+
         Booking memory booking;
-        booking.startTime = startTime;
-        booking.endTime = endTime;
-        booking.amountPaid = ((endTime - startTime) / 60) * rate;
+        booking.amountPaid = dates.length * rate;
         booking.renter = msg.sender; // address of person calling contract
+        booking.dates = dates;
 
         require(msg.value >= booking.amountPaid, "Booking requires more ether"); // validate the amount of ETH
 
@@ -91,10 +103,28 @@ contract Web3bnb is Ownable, ReentrancyGuard, ERC20 {
     }
 
     receive() external payable {
+        allocateIncome(msg.value);
+    }
+
+    function createBooking(uint256 startTime, uint256 endTime) public payable {
+        Booking memory booking;
+        booking.startTime = startTime;
+        booking.endTime = endTime;
+        booking.amountPaid = ((endTime - startTime) / 60) * rate;
+        booking.renter = msg.sender; // address of person calling contract
+
+        require(msg.value >= booking.amountPaid, "Booking requires more ether"); // validate the amount of ETH
+
+        allocateIncome(msg.value);
+
+        bookings.push(booking);
+    }
+
+    function allocateIncome(uint256 value) private {
         require(totalSupply() != 0, "No tokens minted");
-        dividendPerToken += (msg.value * MULTIPLIER) / totalSupply();
+        dividendPerToken += (value * MULTIPLIER) / totalSupply();
         // gwei Multiplier decreases impact of remainder
-        emit FundsReceived(msg.value, dividendPerToken);
+        emit FundsReceived(value, dividendPerToken);
     }
 
     function toggleLock() external onlyOwner {
