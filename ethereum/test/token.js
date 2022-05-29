@@ -39,8 +39,8 @@ describe('Web3bnb - token', () => {
 
   describe('ERC20 mint related tests', async () => {
     it('mint() -- owner minting quantity for alice', async () => {
-      await contract.mint(alice.address, ether(20))
-      expect(await contract.balanceOf(alice.address)).to.eq(ether(20))
+      await contract.mint(alice.address, 1e6)
+      expect(await contract.balanceOf(alice.address)).to.eq(1e6)
     })
     it('mint() -- non-owner trying to mint, should revert', async () => {
       await expect(
@@ -62,8 +62,8 @@ describe('Web3bnb - token', () => {
       const bobBalance1 = await ethers.provider.getBalance(bob.address)
 
       // Mint tokens
-      await contract.mint(alice.address, ether(60))
-      await contract.mint(bob.address, ether(40))
+      await contract.mint(alice.address, 60)
+      await contract.mint(bob.address, 40)
 
       // Collect revenue
       await contract.connect(renter1).createBooking([1644143400], {
@@ -92,8 +92,8 @@ describe('Web3bnb - token', () => {
       const carolBalance1 = await ethers.provider.getBalance(carol.address)
 
       // Mint tokens
-      await contract.mint(alice.address, ether(60))
-      await contract.mint(bob.address, ether(40))
+      await contract.mint(alice.address, 60)
+      await contract.mint(bob.address, 40)
 
       // Collect revenue
       await contract.connect(renter1).createBooking([1644143400], {
@@ -101,10 +101,10 @@ describe('Web3bnb - token', () => {
       })
 
       // Transfer tokens
-      await contract.connect(alice).transfer(carol.address, ether(30))
+      await contract.connect(alice).transfer(carol.address, 30)
 
-      expect(await contract.balanceOf(alice.address)).to.eq(ether(30))
-      expect(await contract.balanceOf(carol.address)).to.eq(ether(30))
+      expect(await contract.balanceOf(alice.address)).to.eq(30)
+      expect(await contract.balanceOf(carol.address)).to.eq(30)
 
       // Collect more revenue
       await contract.connect(renter1).createBooking([1644143600], {
@@ -137,8 +137,8 @@ describe('Web3bnb - token', () => {
       const carolBalance1 = await ethers.provider.getBalance(carol.address)
 
       // Mint tokens
-      await contract.mint(alice.address, ether(60))
-      await contract.mint(bob.address, ether(40))
+      await contract.mint(alice.address, 60)
+      await contract.mint(bob.address, 40)
 
       // Collect revenue
       await contract.connect(renter1).createBooking([1644143400], {
@@ -146,7 +146,7 @@ describe('Web3bnb - token', () => {
       })
 
       // Transfer tokens
-      await contract.connect(alice).transfer(carol.address, ether(60))
+      await contract.connect(alice).transfer(carol.address, 60)
 
       // Collect more revenue
       await contract.connect(renter1).createBooking([1644143600], {
@@ -179,8 +179,8 @@ describe('Web3bnb - token', () => {
       const carolBalance1 = await ethers.provider.getBalance(carol.address)
 
       // Mint tokens
-      await contract.mint(alice.address, ether(30))
-      await contract.mint(bob.address, ether(20))
+      await contract.mint(alice.address, 30)
+      await contract.mint(bob.address, 20)
 
       // Collect revenue
       await contract.connect(renter1).createBooking([1644143400], {
@@ -188,7 +188,7 @@ describe('Web3bnb - token', () => {
       })
 
       // Mint new tokens
-      await contract.mint(carol.address, ether(50))
+      await contract.mint(carol.address, 50)
 
       // Collect more revenue
       await contract.connect(renter1).createBooking([1644143600], {

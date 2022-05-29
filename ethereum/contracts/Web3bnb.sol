@@ -6,8 +6,8 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 contract Web3bnb is Ownable, ReentrancyGuard, ERC20 {
-    uint256 public constant MAX_SUPPLY = 100 ether;
-    uint32 private constant MULTIPLIER = 1e9; // in gwei
+    uint256 public constant MAX_SUPPLY = 1e6;
+    uint32 private constant MULTIPLIER = 1e9; // in gwei (reduces rounding errors)
     uint8 private constant MAX_BOOKING_DAYS = 7;
 
     uint256 rate; // daily rental rate
@@ -50,6 +50,10 @@ contract Web3bnb is Ownable, ReentrancyGuard, ERC20 {
         ERC20(name_, symbol_)
     {
         locked = true;
+    }
+
+    function maxSupply() public pure returns (uint256) {
+        return MAX_SUPPLY;
     }
 
     function mint(address to_, uint256 amount_)

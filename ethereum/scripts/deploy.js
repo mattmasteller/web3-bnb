@@ -17,7 +17,7 @@ function saveFrontendFiles() {
     fs.mkdirSync(abiDir)
   }
 
-  const artifact = artifacts.readArtifactSync('Web3bnb')
+  const artifact = hre.artifacts.readArtifactSync('Web3bnb')
 
   fs.writeFileSync(abiDir + '/Web3bnb.json', JSON.stringify(artifact, null, 2))
 }
@@ -40,8 +40,6 @@ async function main() {
 
   const accounts = await hre.ethers.getSigners()
   console.log('owner address', accounts[0].address)
-
-  await contract.mint(accounts[0].address, 1000000)
 
   saveFrontendFiles()
 }
