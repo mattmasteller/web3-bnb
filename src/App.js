@@ -10,8 +10,10 @@ import {
   Text,
   Button,
   Stack,
+  Wrap
 } from '@chakra-ui/react'
 
+import PropertyInfoCard from './components/PropertyInfoCard'
 import Calendar from './components/Calendar'
 import MintTokensDrawer from './components/MintTokensDrawer'
 
@@ -152,16 +154,17 @@ function App() {
             them loyalty points. Give back to your loyal readers by granting
             them access to your pre-releases and sneak-peaks.
           </Text>
-          <Stack
-            direction={'column'}
-            spacing={3}
+          <Wrap
+            direction={'row'}
+            spacing={10}
             align={'center'}
             alignSelf={'center'}
             position={'relative'}
           >
             {!account && <Text>Please connect to Rinkeby Network.</Text>}
-            {account && <Calendar account={account} />}
-          </Stack>
+            <PropertyInfoCard />
+            {account && <Calendar pl={12} account={account} />}
+          </Wrap>
         </Stack>
       </Container>
     </>
