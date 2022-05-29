@@ -17,6 +17,7 @@ import MintTokensDrawer from './components/MintTokensDrawer'
 
 import { ethers } from 'ethers'
 import abi from './abis/Web3bnb.json'
+import SetRateDrawer from './components/SetRateDrawer'
 
 // const contractAddress = '0x5fbdb2315678afecb367f032d93f642f64180aa3' // localhost
 const contractAddress = '0xf4EeD0468808D57f642fB635f7c85D03Ae2B4340' // rinkeby
@@ -106,6 +107,7 @@ function App() {
         gap="2"
       >
         {account && isAdmin && <MintTokensDrawer contract={contract} />}
+        {account && isAdmin && <SetRateDrawer contract={contract} />}
         <Spacer />
         {!account && (
           <Button
