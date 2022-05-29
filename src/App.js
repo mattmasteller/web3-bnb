@@ -1,15 +1,35 @@
 import { useEffect, useState } from 'react'
 import detectEthereumProvider from '@metamask/detect-provider'
-import { Box, Heading, Container, Text, Button, Stack } from '@chakra-ui/react'
+import {
+  Box,
+  Heading,
+  Container,
+  Flex,
+  Spacer,
+  Text,
+  Button,
+  Stack,
+} from '@chakra-ui/react'
 
 import Calendar from './components/Calendar'
+import MintTokensDrawer from './components/MintTokensDrawer'
+
+import { ethers } from 'ethers'
+import abi from './abis/Web3bnb.json'
+
+const contractAddress = '0x5fbdb2315678afecb367f032d93f642f64180aa3'
+const contractABI = abi.abi
+const provider = new ethers.providers.Web3Provider(window.ethereum)
+const contract = new ethers.Contract(
+  contractAddress,
+  contractABI,
+  provider.getSigner()
+)
 
 function App() {
   const [account, setAccount] = useState(false)
-
-  useEffect(() => {
-    isConnected()
-  }, [])
+  // admin rate setting functionality
+  const [isAdmin, setIsAdmin] = useState(false)
 
   const isConnected = async () => {
     const provider = await detectEthereumProvider()
@@ -43,60 +63,86 @@ function App() {
     }
   }
 
+  useEffect(() => {
+    isConnected()
+  }, [])
+
+  useEffect(() => {
+    const getData = async () => {
+      // get contract owner and set admin if connected account is owner
+      const owner = await contract.owner()
+      setIsAdmin(owner.toUpperCase() === account.toUpperCase())
+      console.log('owner', owner)
+    }
+    getData()
+  }, [account])
+
   return (
-    <Container maxW={'3xl'}>
-      <Stack
-        as={Box}
-        textAlign={'center'}
-        spacing={{ base: 8, md: 14 }}
-        py={{ base: 12, md: 20 }}
+    <>
+      <Flex
+        p={{ base: 4, md: 8 }}
+        minWidth="max-content"
+        alignItems="center"
+        gap="2"
       >
-        <Heading
-          fontWeight={600}
-          fontSize={{ base: '2xl', sm: '4xl', md: '6xl' }}
-          lineHeight={'110%'}
-        >
-          🏡 web3bnb <br />
-          <Text as={'span'} color={'green.400'}>
-            Own. Book. Enjoy!
-          </Text>{' '}
-          <br />
-        </Heading>
-        <Text color={'gray.500'}>
-          Monetize your content by charging your most loyal readers and reward
-          them loyalty points. Give back to your loyal readers by granting them
-          access to your pre-releases and sneak-peaks.
-        </Text>
+        {account && isAdmin && <MintTokensDrawer />}
+        <Spacer />
+        {!account && (
+          <Button
+            onClick={connect}
+            colorScheme={'green'}
+            bg={'green.400'}
+            rounded={'full'}
+            px={6}
+            _hover={{
+              bg: 'green.500',
+            }}
+          >
+            Connect Wallet
+          </Button>
+        )}
+        {account && (
+          <>
+            <div>{account}</div>
+          </>
+        )}
+      </Flex>
+      <Container maxW={'3xl'}>
         <Stack
-          direction={'column'}
-          spacing={3}
-          align={'center'}
-          alignSelf={'center'}
-          position={'relative'}
+          as={Box}
+          textAlign={'center'}
+          spacing={{ base: 8, md: 14 }}
+          py={{ base: 12, md: 20 }}
         >
-          {!account && (
-            <Button
-              onClick={connect}
-              colorScheme={'green'}
-              bg={'green.400'}
-              rounded={'full'}
-              px={6}
-              _hover={{
-                bg: 'green.500',
-              }}
-            >
-              Connect your Wallet
-            </Button>
-          )}
-          {account && (
-            <>
-              <div>{account}</div>
-              <Calendar account={account} />
-            </>
-          )}
+          <Heading
+            fontWeight={600}
+            fontSize={{ base: '2xl', sm: '4xl', md: '6xl' }}
+            lineHeight={'110%'}
+          >
+            🏡 web3bnb <br />
+            <Text as={'span'} color={'green.400'}>
+              Own. Book. Enjoy!
+            </Text>{' '}
+            <br />
+          </Heading>
+          <Text color={'gray.500'}>
+            Monetize your content by charging your most loyal readers and reward
+            them loyalty points. Give back to your loyal readers by granting
+            them access to your pre-releases and sneak-peaks.
+          </Text>
+          <Stack
+            direction={'column'}
+            spacing={3}
+            align={'center'}
+            alignSelf={'center'}
+            position={'relative'}
+          >
+            {!account && <Text>Please connect to Rinkeby Network.</Text>}
+            {account && <Calendar account={account} />}
+          </Stack>
         </Stack>
-      </Stack>
-    </Container>
+      </Container>
+    </>
   )
 }
 
