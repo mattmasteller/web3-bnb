@@ -3,7 +3,9 @@ import { useEffect, useState } from 'react'
 import { DayPicker } from 'react-day-picker'
 import 'react-day-picker/dist/style.css'
 
-import { ethers } from 'ethers'
+import TxAlertDialog from './TxAlertDialog'
+
+import { BigNumber, ethers } from 'ethers'
 import abi from '../abis/Web3bnb.json'
 
 // const contractAddress = '0x5fbdb2315678afecb367f032d93f642f64180aa3' // localhost
@@ -16,26 +18,24 @@ const contract = new ethers.Contract(
   provider.getSigner()
 )
 
+const ether = (amount) => {
+  const weiString = ethers.utils.parseEther(amount.toString())
+  return BigNumber.from(weiString)
+}
+
 const Calendar = ({ account }) => {
   // admin rate setting functionality
-  const [showAdmin, setShowAdmin] = useState(false)
-  const [isAdmin, setIsAdmin] = useState(false)
   const [rate, setRate] = useState(false)
-  // token info
-  const [tokenSupply, setTokenSupply] = useState(0)
   // booking setting and storage
-  const [bookings, setBookings] = useState([])
-
   const [selectedDays, setSelectedDays] = useState([])
-
-  const disabledDays = [new Date(2022, 4, 29, 11), new Date(2022, 4, 30)]
+  const [disabledDays, setDisabledDays] = useState([])
+  // tx dialog and progess indicators
+  const [showTxDialog, setShowTxDialog] = useState(false)
+  const [showTxSign, setShowTxSign] = useState(false)
+  const [isTxMined, setIsTxMined] = useState(false)
+  const [txHash, setTxHash] = useState('')
 
   const getData = async () => {
-    // get contract owner and set admin if connected account is owner
-    const owner = await contract.owner()
-    setIsAdmin(owner.toUpperCase() === account.toUpperCase())
-    console.log('owner', owner)
-
     // get booking rate
     const rateData = await contract.getRate()
     setRate(ethers.utils.formatEther(rateData.toString()))
@@ -44,35 +44,64 @@ const Calendar = ({ account }) => {
     // get bookings data
     const bookingData = await contract.getBookings()
     console.log('bookingData', bookingData)
+    transformBookingData(bookingData)
   }
 
-  const handleDayClick = (day, modifiers) => {
-    setSelectedDays((currentValue) => {
-      const days = [...currentValue]
-      if (modifiers.selected) {
-        days.splice(currentValue.indexOf(day), 1)
-      } else {
-        days.push(day)
-      }
-      return days
+  const transformBookingData = (bookingData) => {
+    let data = []
+    bookingData.forEach((booking) => {
+      booking.dates.forEach((bookingDate) => {
+        data.push(new Date(bookingDate.toNumber() * 1000))
+      })
     })
+
+    setDisabledDays(data)
   }
 
   const handleResetClick = () => setSelectedDays([])
 
+  const saveBooking = async (data) => {
+    // convert selectedDays to unix times
+    const dates = data.map((d) => d.getTime() / 1000)
+
+    setShowTxDialog(true)
+    setShowTxSign(true)
+    setIsTxMined(false)
+
+    try {
+      const tx = await contract.createBooking(dates, {
+        value: ether(rate * selectedDays.length),
+      })
+
+      setShowTxSign(false)
+
+      await tx.wait()
+
+      console.log('mine success', tx.hash)
+      setIsTxMined(true)
+      setTxHash(tx.hash)
+
+      getData()
+    } catch (error) {
+      console.error('mine failure', error)
+      setShowTxDialog(false)
+    }
+  }
+
   const handleBookNowClick = () => {
-    console.log('selectedDays', selectedDays)
+    saveBooking(selectedDays)
     setSelectedDays([])
   }
 
-  let footer = <Text>Please pick one or more days.</Text>
+  let footer = <Text>Please pick one or more days. (max 7)</Text>
 
   if (selectedDays.length > 0)
-    footer = <p>You selected {selectedDays.length} days. </p>
-
-  const DaysList = () => {
-    return selectedDays.map((d) => <div>{d.toString()}</div>)
-  }
+    footer = (
+      <p>
+        You selected {selectedDays.length} days. ({rate * selectedDays.length}{' '}
+        eth)
+      </p>
+    )
 
   useEffect(() => {
     getData()
@@ -80,30 +109,41 @@ const Calendar = ({ account }) => {
 
   return (
     <>
-      <DayPicker
-        onDayClick={handleDayClick}
-        disabled={disabledDays}
-        selected={selectedDays}
-        footer={footer}
-      />
-      <Stack direction="row" spacing={4} align="center">
-        <Button
-          colorScheme="green"
-          disabled={selectedDays.length === 0}
-          onClick={handleBookNowClick}
-        >
-          Book Now
-        </Button>
-        <Button
-          variant="link"
-          disabled={selectedDays.length === 0}
-          onClick={handleResetClick}
-        >
-          Reset
-        </Button>
+      <Stack direction="column" spacing={3} align="center">
+        <DayPicker
+          onSelect={setSelectedDays}
+          mode="multiple"
+          min={1}
+          max={7}
+          disabled={disabledDays}
+          selected={selectedDays}
+          footer={footer}
+        />
+        <Stack direction="row" spacing={4} align="center">
+          <Button
+            colorScheme="green"
+            disabled={selectedDays.length === 0}
+            onClick={handleBookNowClick}
+          >
+            Book Now
+          </Button>
+          <Button
+            variant="link"
+            disabled={selectedDays.length === 0}
+            onClick={handleResetClick}
+          >
+            Reset
+          </Button>
+        </Stack>
       </Stack>
-
-      <DaysList />
+      {showTxDialog && (
+        <TxAlertDialog
+          showTxSign={showTxSign}
+          isTxMined={isTxMined}
+          txHash={txHash}
+          onClick={() => setShowTxDialog(false)}
+        />
+      )}
     </>
   )
 }
