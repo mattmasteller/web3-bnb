@@ -19,19 +19,7 @@ import {
 
 import TxAlertDialog from './TxAlertDialog'
 
-import { ethers } from 'ethers'
-import abi from '../abis/Web3bnb.json'
-
-const contractAddress = '0x5fbdb2315678afecb367f032d93f642f64180aa3'
-const contractABI = abi.abi
-const provider = new ethers.providers.Web3Provider(window.ethereum)
-const contract = new ethers.Contract(
-  contractAddress,
-  contractABI,
-  provider.getSigner()
-)
-
-const MintTokensDrawer = () => {
+const MintTokensDrawer = ({ contract }) => {
   // drawer state
   const { isOpen, onOpen, onClose } = useDisclosure()
   const btnRef = useRef()
