@@ -85,7 +85,7 @@ const MintTokensDrawer = ({ contract }) => {
 
   return (
     <>
-      <Button ref={btnRef} colorScheme="green" onClick={onOpen}>
+      <Button size="xs" ref={btnRef} colorScheme="green" onClick={onOpen}>
         Mint Tokens
       </Button>
       <Drawer
