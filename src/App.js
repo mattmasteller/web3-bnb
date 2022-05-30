@@ -154,10 +154,12 @@ function App() {
             </Text>{' '}
             <br />
           </Heading>
-          <Text color={'gray.500'}>
-            Monetize your content by charging your most loyal readers and reward
-            them loyalty points. Give back to your loyal readers by granting
-            them access to your pre-releases and sneak-peaks.
+          <Text
+            fontSize={{ base: 'sm', sm: 'md', md: 'xl' }}
+            color={'gray.500'}
+          >
+            Own a share of your favorite property. Rent your favorite property.
+            All on-chain!
           </Text>
           <Wrap
             direction={'row'}
