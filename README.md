@@ -1,70 +1,70 @@
-# Getting Started with Create React App
+## On-chain BNB Property Ownership and Rental
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![Header](/screenshots/web3-bnb.png)
 
-## Available Scripts
+### Features
 
-In the project directory, you can run:
+A solidity smart contract + dapp that combines the core features of renting a single property (e.g. an AirBnb rental) with an ERC-20 dividend paying token for multiple owners of the property:
 
-### `yarn start`
+- a group of owners/investors (shareholders) can buy a property together
+- guests can book and pay rent for the property
+- earnings (rent) can be withdrawn by a shareholder proportionally to their number of shares
+- the dapp supports use cases for both guests and owners
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Run the project locally
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+1. Clone the project locally:
 
-### `yarn test`
+    ```bash
+    git clone https://github.com/mattmasteller/web3-bnb.git
+    ```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+2. Install dependencies:
 
-### `yarn build`
+    ```bash
+    yarn install
+    ```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+3. Start the local Hardhat node:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+    ```bash
+    yarn hardhat node
+    ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+4. With the Hardhat node running, deploy the smart contract to the local network in a separate terminal window:
 
-### `yarn eject`
+    ```bash
+    yarn hardhat run ethereum/scripts/deploy.js --network localhost
+    ```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+5. Copy the contract address from the terminal and assign it to the REACT_APP_CONTRACT_ADDRESS environment variable in the .env file.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+6. Configure .env file inside the root directory:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+    ```file
+    NETWORK_URL=https://eth-rinkeby.alchemyapi.io/v2/your-alchemy-key
+    REACT_APP_CONTRACT_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3
+    ```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+7. Launch the frontend client app:
 
-## Learn More
+    ```bash
+    yarn start
+    ```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Deployed website
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+<https://web3-bnb.netlify.app/>
 
-### Code Splitting
+### Deployed contract
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+<https://rinkeby.etherscan.io/address/0xa3Cbdaa189D193d905662bbb999446854C1a5480>
 
-### Analyzing the Bundle Size
+### Technology
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- hardhat
+- solidity
+- openzeppelin
+- react
+- ethers
+- chakra-ui
