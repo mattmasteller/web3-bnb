@@ -13,7 +13,7 @@ const contract = new ethers.Contract(
   provider.getSigner()
 )
 
-const CHAIN_ID = '0x7a69' // Rinkeby (Rinkeby = '4', Hardhat = '0x7a69')
+const CHAIN_ID = '4' // Rinkeby (Rinkeby = '4', Hardhat = '0x7a69')
 
 const useEthereum = () => {
   const [account, setAccount] = useState(null)
