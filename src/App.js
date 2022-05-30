@@ -49,7 +49,7 @@ function App() {
     return () => {
       removeListeners()
     }
-  }, [])
+  }, [isWalletConnected, removeListeners, setListeners])
 
   useEffect(() => {
     const getData = async () => {
@@ -67,7 +67,7 @@ function App() {
     }
 
     getData()
-  }, [contract, account])
+  }, [contract, isCorrectChain, account])
 
   return (
     <>
