@@ -41,7 +41,6 @@ const SetRateDrawer = ({ contract }) => {
     // get booking rate
     const rateData = await contract.getRate()
     setRate(ethers.utils.formatEther(rateData.toString()))
-    console.log('rateData', rateData.toString())
   }
 
   useEffect(() => {

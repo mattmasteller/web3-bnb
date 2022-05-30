@@ -10,7 +10,7 @@ import {
   Text,
   Button,
   Stack,
-  Wrap
+  Wrap,
 } from '@chakra-ui/react'
 
 import PropertyInfoCard from './components/PropertyInfoCard'
@@ -22,8 +22,7 @@ import abi from './abis/Web3bnb.json'
 import SetRateDrawer from './components/SetRateDrawer'
 import WithdrawEarningsButton from './components/WithdrawEarningsButton'
 
-// const contractAddress = '0x5fbdb2315678afecb367f032d93f642f64180aa3' // localhost
-const contractAddress = '0xf4EeD0468808D57f642fB635f7c85D03Ae2B4340' // rinkeby
+const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS
 const contractABI = abi.abi
 const provider = new ethers.providers.Web3Provider(window.ethereum)
 const contract = new ethers.Contract(

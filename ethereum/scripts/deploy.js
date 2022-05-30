@@ -8,6 +8,11 @@
 // Runtime Environment's members available in the global scope.
 const hre = require('hardhat')
 
+const ether = (amount) => {
+  const weiString = hre.ethers.utils.parseEther(amount.toString())
+  return hre.ethers.BigNumber.from(weiString)
+}
+
 function saveFrontendFiles() {
   const fs = require('fs')
 
@@ -34,13 +39,26 @@ async function main() {
   const Contract = await hre.ethers.getContractFactory('Web3bnb')
   const contract = await Contract.deploy('Web3bnb Token', '3BNB')
 
+  // Deploy contract
   await contract.deployed()
-
   console.log('Web3bnb deployed to:', contract.address)
 
   const accounts = await hre.ethers.getSigners()
-  console.log('owner address', accounts[0].address)
+  console.log('Owner address', accounts[0].address)
 
+  // Setup defaults
+  console.log('Setup Defaults:')
+  // Mint 1000 tokens to owner
+  await contract.mint(accounts[0].address, 1000)
+  console.log('  Minted 1000 tokens to', accounts[0].address)
+  // Set rental rate to 0.1 eth
+  await contract.setRate(ether(0.1))
+  console.log('  Set rental rate to 0.1 eth')
+  // Unlock for withdrawals
+  await contract.toggleLock()
+  console.log('  Unlocked contract for earnings withdrawals')
+
+  // Copy ABI file to frontend project
   saveFrontendFiles()
 }
 

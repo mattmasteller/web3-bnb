@@ -1,7 +1,6 @@
 {
   "name": "web3-bnb",
   "version": "0.1.0",
-  "private": true,
   "dependencies": {
     "@chakra-ui/icons": "^2.0.1",
     "@chakra-ui/react": "^2.1.2",
@@ -23,7 +22,10 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "start:evm": "yarn hardhat node",
+    "deploy:localhost": "yarn hardhat run ethereum/scripts/deploy.js --network localhost",
+    "deploy:rinkeby": "yarn hardhat run ethereum/scripts/deploy.js --network rinkeby"
   },
   "eslintConfig": {
     "extends": [
