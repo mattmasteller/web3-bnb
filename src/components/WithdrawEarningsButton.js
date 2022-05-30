@@ -5,9 +5,7 @@ import { Button } from '@chakra-ui/react'
 
 import TxAlertDialog from './TxAlertDialog'
 
-const WithdrawEarningsButton = ({ contract }) => {
-  // shareholder functionality
-  const [earnings, setEarnings] = useState(false)
+const WithdrawEarningsButton = ({ contract, earnings, setEarnings }) => {
   // tx dialog and progess indicators
   const [showTxDialog, setShowTxDialog] = useState(false)
   const [showTxSign, setShowTxSign] = useState(false)
@@ -22,7 +20,7 @@ const WithdrawEarningsButton = ({ contract }) => {
     }
 
     getData()
-  }, [contract, txHash])
+  }, [contract, setEarnings, txHash])
 
   const withdrawEarningsTxn = async () => {
     setShowTxSign(true)
@@ -47,9 +45,12 @@ const WithdrawEarningsButton = ({ contract }) => {
 
   return (
     <>
-      <Button size="xs" colorScheme="green" onClick={withdrawEarningsTxn}>
-        Withdraw {earnings} eth{' '}
-      </Button>
+      {earnings !== '0.0' && (
+        <Button size="xs" colorScheme="green" onClick={withdrawEarningsTxn}>
+          Withdraw {earnings} eth{' '}
+        </Button>
+      )}
+
       {showTxDialog && (
         <TxAlertDialog
           showTxSign={showTxSign}

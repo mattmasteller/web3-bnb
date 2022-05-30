@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { BigNumber, ethers } from 'ethers'
 
 import {
@@ -25,27 +25,15 @@ const ether = (amount) => {
   return BigNumber.from(weiString)
 }
 
-const SetRateDrawer = ({ contract }) => {
+const SetRateDrawer = ({ contract, rate, setRate }) => {
   // drawer state
   const { isOpen, onOpen, onClose } = useDisclosure()
   const btnRef = useRef()
-  // rate info
-  const [rate, setRate] = useState(false)
   // tx dialog and progess indicators
   const [showTxDialog, setShowTxDialog] = useState(false)
   const [showTxSign, setShowTxSign] = useState(false)
   const [isTxMined, setIsTxMined] = useState(false)
   const [txHash, setTxHash] = useState('')
-
-  useEffect(() => {
-    const getData = async () => {
-      // get booking rate
-      const rateData = await contract.getRate()
-      setRate(ethers.utils.formatEther(rateData.toString()))
-    }
-
-    getData()
-  }, [contract, txHash])
 
   const setRateTxn = async (e) => {
     e.preventDefault()
@@ -71,6 +59,10 @@ const SetRateDrawer = ({ contract }) => {
 
       await tx.wait()
 
+      // get booking rate
+      const rateData = await contract.getRate()
+      setRate(ethers.utils.formatEther(rateData.toString()))
+      
       console.log('mine success', tx.hash)
 
       setIsTxMined(true)

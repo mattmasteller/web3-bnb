@@ -1,30 +1,18 @@
-import { Button, Stack, Text } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
+import { Button, Stack, Text } from '@chakra-ui/react'
 import { DayPicker } from 'react-day-picker'
 import 'react-day-picker/dist/style.css'
 
 import TxAlertDialog from './TxAlertDialog'
 
 import { BigNumber, ethers } from 'ethers'
-import abi from '../abis/Web3bnb.json'
-
-const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS
-const contractABI = abi.abi
-const provider = new ethers.providers.Web3Provider(window.ethereum)
-const contract = new ethers.Contract(
-  contractAddress,
-  contractABI,
-  provider.getSigner()
-)
 
 const ether = (amount) => {
   const weiString = ethers.utils.parseEther(amount.toString())
   return BigNumber.from(weiString)
 }
 
-const Calendar = () => {
-  // admin rate setting functionality
-  const [rate, setRate] = useState(false)
+const Calendar = ({ contract, rate }) => {
   // booking setting and storage
   const [selectedDays, setSelectedDays] = useState([])
   const [disabledDays, setDisabledDays] = useState([])
@@ -90,17 +78,13 @@ const Calendar = () => {
 
   useEffect(() => {
     const getData = async () => {
-      // get booking rate
-      const rateData = await contract.getRate()
-      setRate(ethers.utils.formatEther(rateData.toString()))
-
       // get bookings data
       const bookingData = await contract.getBookings()
       transformBookingData(bookingData)
     }
 
     getData()
-  }, [txHash])
+  }, [contract, txHash])
 
   return (
     <>

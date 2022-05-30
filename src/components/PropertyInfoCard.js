@@ -1,32 +1,7 @@
-import { useEffect, useState } from 'react'
 import { Box, Image, Badge } from '@chakra-ui/react'
 import { StarIcon } from '@chakra-ui/icons'
 
-import { ethers } from 'ethers'
-import abi from '../abis/Web3bnb.json'
-
-const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS
-const contractABI = abi.abi
-const provider = new ethers.providers.Web3Provider(window.ethereum)
-const contract = new ethers.Contract(
-  contractAddress,
-  contractABI,
-  provider.getSigner()
-)
-
-const PropertyInfoCard = () => {
-  const [rate, setRate] = useState(0)
-
-  useEffect(() => {
-    const getData = async () => {
-      // get booking rate
-      const rateData = await contract.getRate()
-      setRate(ethers.utils.formatEther(rateData.toString()))
-    }
-
-    getData()
-  }, [rate])
-
+const PropertyInfoCard = ({ rate }) => {
   let property = {
     imageUrl: 'https://bit.ly/2Z4KKcF',
     imageAlt: 'Rear view of modern home with pool',
@@ -74,12 +49,9 @@ const PropertyInfoCard = () => {
           {property.title}
         </Box>
 
-        <Box>
-          {rate}
-          <Box as="span" color="gray.600" fontSize="sm">
-            {' '}
-            eth/night
-          </Box>
+        <Box as="span" color="gray.600" fontSize="sm">
+          {rate && `${rate} eth/night`}
+          {!rate && 'Connect to see rate :)'}
         </Box>
 
         <Box display="flex" mt="2" alignItems="center">

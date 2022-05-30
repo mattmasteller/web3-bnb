@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import detectEthereumProvider from '@metamask/detect-provider'
 import {
   Box,
   Heading,
@@ -13,83 +12,43 @@ import {
   Wrap,
 } from '@chakra-ui/react'
 
+import { ethers } from 'ethers'
+import useEthereum from './hooks/useEthereum'
+
 import PropertyInfoCard from './components/PropertyInfoCard'
 import Calendar from './components/Calendar'
 import MintTokensDrawer from './components/MintTokensDrawer'
-
-import { ethers } from 'ethers'
-import abi from './abis/Web3bnb.json'
 import SetRateDrawer from './components/SetRateDrawer'
 import WithdrawEarningsButton from './components/WithdrawEarningsButton'
-
-const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS
-const contractABI = abi.abi
-const provider = new ethers.providers.Web3Provider(window.ethereum)
-const contract = new ethers.Contract(
-  contractAddress,
-  contractABI,
-  provider.getSigner()
-)
-
-const logAccounts = (accounts) => {
-  console.log(`Accounts:\n${accounts.join('\n')}`)
-}
-window.ethereum.on('accountsChanged', logAccounts)
-
-const logChain = (chain) => {
-  console.log(`Chain:\n${chain}`)
-}
-window.ethereum.on('chainChanged', logChain)
 
 // Shorten wallet address.
 const shortAddress = (str) =>
   `${str.substring(0, 5)}...${str.substring(str.length - 4)}`
 
 function App() {
-  // const [chain, setChain] = useState(false)
-  const [account, setAccount] = useState(false)
   // admin rate setting functionality
   const [isAdmin, setIsAdmin] = useState(false)
+  const [rate, setRate] = useState(false)
   // shareholder functionality
   const [earnings, setEarnings] = useState(false)
 
-  const isConnected = async () => {
-    const provider = await detectEthereumProvider()
-    const accounts = await provider.request({ method: 'eth_accounts' })
-    const chainId = await provider.request({ method: 'eth_chainId' })
-
-    if (accounts.length > 0) {
-      console.log('setAccount', accounts[0])
-      setAccount(accounts[0])
-      console.log('setChainId', chainId)
-      // setChain(chainId)
-    } else {
-      console.log('No authorized account found')
-    }
-  }
-
-  const connect = async () => {
-    try {
-      const provider = await detectEthereumProvider()
-
-      // returns an arrary of accounts
-      const accounts = await provider.request({
-        method: 'eth_requestAccounts',
-      })
-
-      // check if array at least one element
-      if (accounts.length > 0) {
-        setAccount(accounts[0])
-      } else {
-        alert('No account found')
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  const {
+    isWalletConnected,
+    connectWallet,
+    contract,
+    account,
+    isCorrectChain,
+    setListeners,
+    removeListeners,
+  } = useEthereum()
 
   useEffect(() => {
-    isConnected()
+    setListeners()
+    isWalletConnected()
+
+    return () => {
+      removeListeners()
+    }
   }, [])
 
   useEffect(() => {
@@ -97,12 +56,18 @@ function App() {
       // get contract owner and set admin if connected account is owner
       const owner = await contract.owner()
       setIsAdmin(owner.toUpperCase() === account.toUpperCase())
+
       // get earnings info
       const earningsData = await contract.earnings()
       setEarnings(ethers.utils.formatEther(earningsData.toString()))
+
+      // get booking rate
+      const rateData = await contract.getRate()
+      setRate(ethers.utils.formatEther(rateData.toString()))
     }
+
     getData()
-  }, [account])
+  }, [contract, account])
 
   return (
     <>
@@ -112,13 +77,24 @@ function App() {
         alignItems="center"
         gap="2"
       >
-        {account && isAdmin && <MintTokensDrawer contract={contract} />}
-        {account && isAdmin && <SetRateDrawer contract={contract} />}
-        {account && earnings && <WithdrawEarningsButton contract={contract} />}
+        {isCorrectChain && account && isAdmin && (
+          <MintTokensDrawer contract={contract} />
+        )}
+        {isCorrectChain && account && isAdmin && (
+          <SetRateDrawer contract={contract} rate={rate} setRate={setRate} />
+        )}
+        {isCorrectChain && account && earnings && (
+          <WithdrawEarningsButton
+            contract={contract}
+            earnings={earnings}
+            setEarnings={setEarnings}
+          />
+        )}
         <Spacer />
-        {!account && (
+        {!isCorrectChain && <div>Connect to Rinkeby</div>}
+        {isCorrectChain && !account && (
           <Button
-            onClick={connect}
+            onClick={connectWallet}
             colorScheme={'green'}
             bg={'green.400'}
             rounded={'full'}
@@ -130,7 +106,7 @@ function App() {
             Connect Wallet
           </Button>
         )}
-        {account && (
+        {isCorrectChain && account && (
           <Tag size="lg" colorScheme="green" borderRadius="full">
             {shortAddress(account)}
           </Tag>
@@ -168,9 +144,13 @@ function App() {
             alignSelf={'center'}
             position={'relative'}
           >
-            {!account && <Text>Please connect to Rinkeby Network.</Text>}
-            <PropertyInfoCard />
-            {account && <Calendar pl={12} account={account} />}
+            <PropertyInfoCard rate={rate} />
+            {(!isCorrectChain || !account) && (
+              <Text>Please connect wallet to Rinkeby Network.</Text>
+            )}
+            {isCorrectChain && account && (
+              <Calendar pl={12} contract={contract} rate={rate} />
+            )}
           </Wrap>
         </Stack>
       </Container>
