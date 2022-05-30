@@ -20,6 +20,7 @@ import MintTokensDrawer from './components/MintTokensDrawer'
 import { ethers } from 'ethers'
 import abi from './abis/Web3bnb.json'
 import SetRateDrawer from './components/SetRateDrawer'
+import WithdrawEarningsButton from './components/WithdrawEarningsButton'
 
 // const contractAddress = '0x5fbdb2315678afecb367f032d93f642f64180aa3' // localhost
 const contractAddress = '0xf4EeD0468808D57f642fB635f7c85D03Ae2B4340' // rinkeby
@@ -50,6 +51,8 @@ function App() {
   const [account, setAccount] = useState(false)
   // admin rate setting functionality
   const [isAdmin, setIsAdmin] = useState(false)
+  // shareholder functionality
+  const [earnings, setEarnings] = useState(false)
 
   const isConnected = async () => {
     const provider = await detectEthereumProvider()
@@ -95,7 +98,9 @@ function App() {
       // get contract owner and set admin if connected account is owner
       const owner = await contract.owner()
       setIsAdmin(owner.toUpperCase() === account.toUpperCase())
-      console.log('owner', owner)
+      // get earnings info
+      const earningsData = await contract.earnings()
+      setEarnings(ethers.utils.formatEther(earningsData.toString()))
     }
     getData()
   }, [account])
@@ -110,6 +115,7 @@ function App() {
       >
         {account && isAdmin && <MintTokensDrawer contract={contract} />}
         {account && isAdmin && <SetRateDrawer contract={contract} />}
+        {account && earnings && <WithdrawEarningsButton contract={contract} />}
         <Spacer />
         {!account && (
           <Button

@@ -70,6 +70,10 @@ describe('Web3bnb - token', () => {
         value: ether(1),
       })
 
+      // Ensure earnings calculated properly
+      expect(await contract.connect(alice).earnings()).to.equal(ether(0.6))
+      expect(await contract.connect(bob).earnings()).to.equal(ether(0.4))
+
       // Withdraw dividends
       await contract.toggleLock()
       await contract.connect(alice).withdraw()

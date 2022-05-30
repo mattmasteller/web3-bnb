@@ -113,13 +113,18 @@ contract Web3bnb is Ownable, ReentrancyGuard, ERC20 {
         locked = !locked;
     }
 
-    /// @notice Withdraw Eth from contract onto the caller w.r.t balance of token held by caller
-    /// @dev Reentrancy Guard modifier in order to protect the transaction from reentrancy attack
-    function withdraw() external nonReentrant isUnlocked {
+    function earnings() public view returns (uint256) {
         uint256 holderBalance = balanceOf(_msgSender());
         uint256 amount = (((dividendPerToken -
             xDividendPerToken[_msgSender()]) * holderBalance) / MULTIPLIER);
         amount += credit[_msgSender()];
+        return amount;
+    }
+
+    /// @notice Withdraw Eth from contract onto the caller w.r.t balance of token held by caller
+    /// @dev Reentrancy Guard modifier in order to protect the transaction from reentrancy attack
+    function withdraw() external nonReentrant isUnlocked {
+        uint256 amount = earnings();
 
         require(amount != 0, "Web3bnb: caller has no dividends or credits");
 
