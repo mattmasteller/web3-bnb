@@ -43,6 +43,7 @@ A solidity smart contract + dapp that combines the core features of renting a si
 
     ```file
     NETWORK_URL=https://eth-rinkeby.alchemyapi.io/v2/your-alchemy-key
+    PRIVATE_KEY=your-private-key-used-to-deploy-the-contract
     REACT_APP_CONTRACT_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3
     ```
 
