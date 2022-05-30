@@ -14,20 +14,18 @@ const contract = new ethers.Contract(
   provider.getSigner()
 )
 
-const PropertyInfoCard = ({ account }) => {
+const PropertyInfoCard = () => {
   const [rate, setRate] = useState(0)
 
-  const getData = async () => {
-    // get booking rate
-    const rateData = await contract.getRate()
-    setRate(ethers.utils.formatEther(rateData.toString()))
-    console.log('PropertyInfoCard.getData rateData', rateData.toString())
-  }
-
   useEffect(() => {
-    console.log('PropertyInfoCard getData()')
+    const getData = async () => {
+      // get booking rate
+      const rateData = await contract.getRate()
+      setRate(ethers.utils.formatEther(rateData.toString()))
+    }
+
     getData()
-  }, [contract])
+  }, [rate])
 
   let property = {
     imageUrl: 'https://bit.ly/2Z4KKcF',

@@ -14,15 +14,15 @@ const WithdrawEarningsButton = ({ contract }) => {
   const [isTxMined, setIsTxMined] = useState(false)
   const [txHash, setTxHash] = useState('')
 
-  const getData = async () => {
-    // get earnings info
-    const earningsData = await contract.earnings()
-    setEarnings(ethers.utils.formatEther(earningsData.toString()))
-  }
-
   useEffect(() => {
+    const getData = async () => {
+      // get earnings info
+      const earningsData = await contract.earnings()
+      setEarnings(ethers.utils.formatEther(earningsData.toString()))
+    }
+
     getData()
-  }, [])
+  }, [contract, txHash])
 
   const withdrawEarningsTxn = async () => {
     setShowTxSign(true)
@@ -40,8 +40,6 @@ const WithdrawEarningsButton = ({ contract }) => {
 
       setIsTxMined(true)
       setTxHash(tx.hash)
-
-      getData()
     } catch (error) {
       console.log('mine failure', error)
     }

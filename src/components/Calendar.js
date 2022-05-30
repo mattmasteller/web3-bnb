@@ -22,7 +22,7 @@ const ether = (amount) => {
   return BigNumber.from(weiString)
 }
 
-const Calendar = ({ account }) => {
+const Calendar = () => {
   // admin rate setting functionality
   const [rate, setRate] = useState(false)
   // booking setting and storage
@@ -33,18 +33,6 @@ const Calendar = ({ account }) => {
   const [showTxSign, setShowTxSign] = useState(false)
   const [isTxMined, setIsTxMined] = useState(false)
   const [txHash, setTxHash] = useState('')
-
-  const getData = async () => {
-    // get booking rate
-    const rateData = await contract.getRate()
-    setRate(ethers.utils.formatEther(rateData.toString()))
-    console.log('rateData', rateData.toString())
-
-    // get bookings data
-    const bookingData = await contract.getBookings()
-    console.log('bookingData', bookingData)
-    transformBookingData(bookingData)
-  }
 
   const transformBookingData = (bookingData) => {
     let data = []
@@ -79,8 +67,6 @@ const Calendar = ({ account }) => {
       console.log('mine success', tx.hash)
       setIsTxMined(true)
       setTxHash(tx.hash)
-
-      getData()
     } catch (error) {
       console.error('mine failure', error)
       setShowTxDialog(false)
@@ -103,8 +89,18 @@ const Calendar = ({ account }) => {
     )
 
   useEffect(() => {
+    const getData = async () => {
+      // get booking rate
+      const rateData = await contract.getRate()
+      setRate(ethers.utils.formatEther(rateData.toString()))
+
+      // get bookings data
+      const bookingData = await contract.getBookings()
+      transformBookingData(bookingData)
+    }
+
     getData()
-  }, [])
+  }, [txHash])
 
   return (
     <>

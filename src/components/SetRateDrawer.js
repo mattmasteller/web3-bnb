@@ -37,15 +37,15 @@ const SetRateDrawer = ({ contract }) => {
   const [isTxMined, setIsTxMined] = useState(false)
   const [txHash, setTxHash] = useState('')
 
-  const getData = async () => {
-    // get booking rate
-    const rateData = await contract.getRate()
-    setRate(ethers.utils.formatEther(rateData.toString()))
-  }
-
   useEffect(() => {
+    const getData = async () => {
+      // get booking rate
+      const rateData = await contract.getRate()
+      setRate(ethers.utils.formatEther(rateData.toString()))
+    }
+
     getData()
-  }, [])
+  }, [contract, txHash])
 
   const setRateTxn = async (e) => {
     e.preventDefault()
@@ -75,8 +75,6 @@ const SetRateDrawer = ({ contract }) => {
 
       setIsTxMined(true)
       setTxHash(tx.hash)
-
-      getData()
     } catch (error) {
       console.log('mine failure', error)
     }

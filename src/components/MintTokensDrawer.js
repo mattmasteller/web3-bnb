@@ -32,22 +32,22 @@ const MintTokensDrawer = ({ contract }) => {
   const [isTxMined, setIsTxMined] = useState(false)
   const [txHash, setTxHash] = useState('')
 
-  const getData = async () => {
-    // get token info
-    const totalTokenSupplyData = await contract.totalSupply()
-    setTotalTokenSupply(
-      totalTokenSupplyData.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-    )
-
-    const maxTokenSupplyData = await contract.maxSupply()
-    setMaxTokenSupply(
-      maxTokenSupplyData.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-    )
-  }
-
   useEffect(() => {
+    const getData = async () => {
+      // get token info
+      const totalTokenSupplyData = await contract.totalSupply()
+      setTotalTokenSupply(
+        totalTokenSupplyData.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      )
+
+      const maxTokenSupplyData = await contract.maxSupply()
+      setMaxTokenSupply(
+        maxTokenSupplyData.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      )
+    }
+
     getData()
-  }, [])
+  }, [contract, txHash])
 
   const mintTokens = async (e) => {
     e.preventDefault()
@@ -76,10 +76,8 @@ const MintTokensDrawer = ({ contract }) => {
 
       setIsTxMined(true)
       setTxHash(tx.hash)
-
-      getData()
     } catch (error) {
-      console.log('mine failure', error)
+      console.error('mine failure', error)
     }
   }
 

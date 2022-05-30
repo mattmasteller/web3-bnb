@@ -46,7 +46,7 @@ const shortAddress = (str) =>
   `${str.substring(0, 5)}...${str.substring(str.length - 4)}`
 
 function App() {
-  const [chain, setChain] = useState(false)
+  // const [chain, setChain] = useState(false)
   const [account, setAccount] = useState(false)
   // admin rate setting functionality
   const [isAdmin, setIsAdmin] = useState(false)
@@ -62,7 +62,7 @@ function App() {
       console.log('setAccount', accounts[0])
       setAccount(accounts[0])
       console.log('setChainId', chainId)
-      setChain(chainId)
+      // setChain(chainId)
     } else {
       console.log('No authorized account found')
     }
