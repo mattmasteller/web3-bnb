@@ -78,12 +78,13 @@ const useEthereum = () => {
         setAccount(accounts[0])
       })
 
-      window.ethereum.on('chainChanged', (chain) => {
-        console.log(`Ethereum 'chainChanged' setChainId:\n${chain}`)
+      window.ethereum.on('chainChanged', (chainId) => {
+        console.log(`Ethereum 'chainChanged' setChainId:\n${chainId}`)
         console.log(
-          `Ethereum 'chainChanged' setIsCorrectChain:\n${chain === CHAIN_ID}`
+          `Ethereum 'chainChanged' setIsCorrectChain:\n${chainId === CHAIN_ID}`
         )
-        setIsCorrectChain(chain === CHAIN_ID)
+        setIsCorrectChain(chainId === CHAIN_ID)
+        window.location.reload()
       })
 
       window.ethereum.on('disconnect', (accounts) => {

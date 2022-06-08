@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import {
   Box,
+  Center,
   Heading,
   Container,
   Flex,
@@ -140,13 +141,18 @@ function App() {
           <Wrap
             direction={'row'}
             spacing={10}
-            align={'center'}
-            alignSelf={'center'}
             position={'relative'}
           >
             <PropertyInfoCard rate={rate} />
             {(!isCorrectChain || !account) && (
-              <Text>Please connect wallet to Rinkeby Network.</Text>
+              <Center minW={300}>
+                <Stack>
+                  <Text fontSize="5xl">
+                    Book Me!
+                  </Text>
+                  <Text>Connect to Rinkeby</Text>
+                </Stack>
+              </Center>
             )}
             {isCorrectChain && account && (
               <Calendar pl={12} contract={contract} rate={rate} />
